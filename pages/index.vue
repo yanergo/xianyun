@@ -61,23 +61,23 @@ export default {
             current: 0
         };
     },
-    methods:{
-        handleTabChange(index){
+    methods: {
+        handleTabChange(index) {
             this.current = index;
 
-            if(index === 2){
-                this.$router.push('/air');
+            if (index === 2) {
+                this.$router.push("/air");
             }
         }
     },
-    mounted() {
-        this.$axios({
+    async mounted() {
+        // 返回一个pomise, res就是axios的resolve的参数（也就是.then的回调函数的参数）
+        const res = await this.$axios({
             url: "/scenics/banners"
-        }).then(res => {
-            const { data } = res.data;
-            console.log(data);
-            this.banners = data;
         });
+
+        const { data } = res.data;
+        this.banners = data;
     }
 };
 </script>
