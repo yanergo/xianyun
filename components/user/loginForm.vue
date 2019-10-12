@@ -65,6 +65,11 @@ export default {
                     if (res.status === 200) {
                         this.$message.success("登陆成功");
 
+                        // 把用户信息保存到本地
+                        const data = res.data;
+
+                        this.$store.commit("user/setUserInfo", data);
+
                         // this.$router.push('/')
                     }
                 }
