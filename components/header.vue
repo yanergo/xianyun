@@ -54,7 +54,10 @@
 export default {
     methods: {
         // 用户退出
-        handleLogout() {}
+        handleLogout() {
+            // 清空用户数据
+            this.$store.commit('user/setUserInfo',{});
+        }
     }
 };
 </script>
