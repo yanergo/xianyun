@@ -8,7 +8,9 @@
         </el-form-item>
         <el-form-item class="form_item" prop="captcha">
             <el-input placeholder="验证码" v-model="form.captcha">
-                <el-button slot="append" @click="handleSendCaptcha">发送验证码</el-button>
+                <el-button slot="append" @click="handleSendCaptcha"
+                    >发送验证码</el-button
+                >
             </el-input>
         </el-form-item>
         <el-form-item class="form_item" prop="nickname">
@@ -38,12 +40,17 @@
 <script>
 export default {
     data() {
+        // 确认密码的校验的方法
+        // rule: 当前的规则，一般是用不上这个参数
+        // value: 输入框的值
+        // callback: 回调函数。该函数必须要调用，调用时候可以传递错误的对象信息
         var validatePass = (rule, value, callback) => {
             if (value === "") {
+                // new Error js原生的错误对象
                 callback(new Error("请输入密码"));
             } else {
                 if (this.form.checkPass !== "") {
-                    this.$refs.form.validateField("checkPass");                    
+                    this.$refs.form.validateField("checkPass");
                 }
                 callback();
             }
@@ -102,9 +109,63 @@ export default {
             }
         };
     },
-    methods:{
-        handleSendCaptcha(){},
-        submitRegisterForm(){}
+    methods: {
+        // 获取验证码
+        async handleSendCaptcha() {
+            if (!this.form.username) {
+                this.$confirm("手机号码不能为空", "提示", {
+                    confirmButtonText: "确定",
+                    showCancelButton: false,
+                    type: "warning"
+                });
+                return;
+            }
+            if (this.form.username.length !== 11) {
+                this.$confirm("手机号码长度应为11位", "提示", {
+                    confirmButtonText: "确定",
+                    showCancelButton: false,
+                    type: "warning"
+                });
+                return;
+            }
+
+            const res = await this.$axios({
+                url: "/captchas",
+                method: "POST",
+                data: {
+                    tel: this.form.username
+                }
+            });
+            const { code } = res.data;
+            // 打印出手机验证码
+            this.$message.success(`手机验证码为：${code}`);
+        },
+        // 注册
+        submitRegisterForm() {
+            this.$refs["form"].validate(async valid => {
+                if (valid) {
+                    // 注册提交
+                    const { checkPass, ...props } = this.form;
+
+                    const res = await this.$axios({
+                        url: "/accounts/register",
+                        method: "POST",
+                        data: props
+                    });
+
+                    if (res.status == 200) {
+                        this.$message.success("注册成功");
+
+                        // 跳转到首页
+                        this.$router.push("/");
+
+                        // 把用户信息保存到本地
+                        const data = res.data;
+                        this.$store.commit("user/setUserInfo", data);
+                    }
+                }
+            });
+        }
     }
 };
 </script>
