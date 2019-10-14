@@ -38,6 +38,7 @@
                     type="date"
                     placeholder="2019-04-30"
                     style="width: 100%;"
+                    @change="handleDate"
                 >
                 </el-date-picker>
             </el-form-item>
@@ -59,6 +60,7 @@
 </template>
 
 <script>
+import moment from "moment";
 export default {
     data() {
         return {
@@ -74,11 +76,18 @@ export default {
                 destCode: "", // 到达城市代码
                 departDate: "" // 日期字符串
             },
-            cities:[]
+            cities: []
         };
     },
     methods: {
-        handleChangeTab(index) {
+        handleChangeTab(index) {          
+            if (index === 1) {
+                this.$alert("目前暂不支持往返，请使用单程选票！", "提示", {
+                    confirmButtonText: "确定",
+                    type: "warning"
+                });
+                return ;
+            }
             this.currentTab = index;
         },
 
@@ -86,7 +95,6 @@ export default {
         // value：输入框的值
         // cb:回调函数，必须要调用，调用时候必须要传递一个数组的参数，
         // 数组中的元素必须是一个对象，对象中必须要有value属性
-
 
         // 目标城市输入框获得焦点时触发
         // value 是选中的值，cb是回调函数，接收要展示的列表
@@ -99,20 +107,20 @@ export default {
             // 请求搜索建议城市数据
             this.$axios({
                 // 接口后拼接输入框内容，会自动返回包含该内容的数据
-                url:'/airs/city?name=' + value
+                url: "/airs/city?name=" + value
             }).then(res => {
-                const {data} = res.data;
+                const { data } = res.data;
                 // 给每一项添加value属性[去除“市”的城市名]
                 const newData = data.map(v => {
-                    v.value = v.name.replace('市','');
+                    v.value = v.name.replace("市", "");
                     return v;
                 });
                 // 保存到data中
                 this.cities = newData;
 
                 // 展示到下拉列表中
-                cb(newData)
-            })
+                cb(newData);
+            });
         },
 
         // 出发城市下拉选择时触发
@@ -122,7 +130,7 @@ export default {
         },
 
         queryDestSearch(value, cb) {
-            this.queryDepartSearch(value,cb);
+            this.queryDepartSearch(value, cb);
         },
 
         // 目标城市下拉选择时触发
@@ -134,19 +142,30 @@ export default {
         },
 
         // 触发和目标城市切换时触发
-        handleReverse() {},
+        handleReverse() {
+            const { departCity, departCode, destCity, destCode } = this.form;
+            this.form.departCity = destCity;
+            this.form.departCode = destCode;
+            this.form.destCity = departCity;
+            this.form.destCode = departCode;
+        },
+
+        // 确认选择日期时触发
+        handleDate(value){
+            this.form.departDate = moment(value).format('YYYY-MM-DD');
+        },
 
         // 提交表单时触发
         handleSubmit() {
-            console.log(this.form); 
+            console.log(this.form);
         },
 
         // 输入城市搜索框失去焦点触发，默认选中城市列表中第一个
-        handleblur(type){
-            if(this.cities.length === 0) return ; 
+        handleblur(type) {
+            if (this.cities.length === 0) return;
             // 用对象的另一种属性调用方式，方便拼接数据
-            this.form[type + 'City'] = this.cities[0].value;
-            this.form[type + 'Code'] = this.cities[0].sort;
+            this.form[type + "City"] = this.cities[0].value;
+            this.form[type + "Code"] = this.cities[0].sort;
         }
     }
 };
