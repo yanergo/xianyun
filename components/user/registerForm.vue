@@ -147,21 +147,13 @@ export default {
                     // 注册提交
                     const { checkPass, ...props } = this.form;
 
-                    const res = await this.$axios({
-                        url: "/accounts/register",
-                        method: "POST",
-                        data: props
-                    });
+                    const res = await this.$store.dispatch('user/register',props);
 
                     if (res.status == 200) {
                         this.$message.success("注册成功");
 
                         // 跳转到首页
                         this.$router.push("/");
-
-                        // 把用户信息保存到本地
-                        const data = res.data;
-                        this.$store.commit("user/setUserInfo", data);
                     }
                 }
             });

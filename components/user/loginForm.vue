@@ -54,24 +54,15 @@ export default {
     methods: {
         submitLoginForm() {
             this.$refs.form.validate(async valid => {
+                // valid是表单验证的结果
                 if (valid) {
-                    //提交登录接口
-                    const res = await this.$axios({
-                        url: "/accounts/login",
-                        method: "POST",
-                        data: this.form
-                    });
-
-                    if (res.status === 200) {
-                        this.$message.success("登陆成功");
-
-                        // 把用户信息保存到本地
-                        const data = res.data;
-
-                        this.$store.commit("user/setUserInfo", data);
-
-                        // this.$router.push('/')
+                    // this.$store.dispath用于调运actions的方法
+                    const res = await this.$store.dispatch('user/login',this.form);
+                    if(res.status === 200){
+                        this.$message.success('登陆成功');
+                        this.$router.push('/');
                     }
+
                 }
             });
         }
