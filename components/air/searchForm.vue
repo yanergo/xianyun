@@ -114,20 +114,30 @@ export default {
         },
 
         // 出发城市下拉选择时触发
-        handleDepartSelect(value, cb) {},
+        handleDepartSelect(item) {
+            this.form.departCity = item.value;
+            this.form.departCode = item.sort;
+        },
 
         queryDestSearch(value, cb) {
             this.queryDepartSearch(value,cb);
         },
 
         // 目标城市下拉选择时触发
-        handleDestSelect(value, cb) {},
+        handleDestSelect(item) {
+            // 参考组件提供的案例，提供了一个参数item，自行打印看看item里有什么
+            // console.log(item);
+            this.form.destCity = item.value;
+            this.form.destCode = item.sort;
+        },
 
         // 触发和目标城市切换时触发
         handleReverse() {},
 
         // 提交表单时触发
-        handleSubmit() {}
+        handleSubmit() {
+            console.log(this.form); 
+        }
     }
 };
 </script>
