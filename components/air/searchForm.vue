@@ -19,6 +19,7 @@
                     :fetch-suggestions="queryDepartSearch"
                     placeholder="请搜索出发城市"
                     @select="handleDepartSelect"
+                    @blur="handleblur('depart')"
                 ></el-autocomplete>
             </el-form-item>
             <el-form-item label="到达城市">
@@ -28,6 +29,7 @@
                     :fetch-suggestions="queryDestSearch"
                     placeholder="请搜索到达城市"
                     @select="handleDestSelect"
+                    @blur="handleblur('dest')"
                 ></el-autocomplete>
             </el-form-item>
             <el-form-item label="出发时间">
@@ -137,6 +139,14 @@ export default {
         // 提交表单时触发
         handleSubmit() {
             console.log(this.form); 
+        },
+
+        // 输入城市搜索框失去焦点触发，默认选中城市列表中第一个
+        handleblur(type){
+            if(this.cities.length === 0) return ; 
+            // 用对象的另一种属性调用方式，方便拼接数据
+            this.form[type + 'City'] = this.cities[0].value;
+            this.form[type + 'Code'] = this.cities[0].sort;
         }
     }
 };
