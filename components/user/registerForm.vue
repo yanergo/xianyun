@@ -129,13 +129,7 @@ export default {
                 return;
             }
 
-            const res = await this.$axios({
-                url: "/captchas",
-                method: "POST",
-                data: {
-                    tel: this.form.username
-                }
-            });
+            const res = await this.$store.dispatch('user/sendCaptcha',this.form.username);
             const { code } = res.data;
             // 打印出手机验证码
             this.$message.success(`手机验证码为：${code}`);

@@ -18,6 +18,7 @@
         </p>
 
         <el-button class="submit" type="primary" @click="submitLoginForm()"
+        @keyup.enter="submitLoginForm()"
             >登录</el-button
         >
     </el-form>
