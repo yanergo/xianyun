@@ -80,13 +80,13 @@ export default {
         };
     },
     methods: {
-        handleChangeTab(index) {          
+        handleChangeTab(index) {
             if (index === 1) {
                 this.$alert("目前暂不支持往返，请使用单程选票！", "提示", {
                     confirmButtonText: "确定",
                     type: "warning"
                 });
-                return ;
+                return;
             }
             this.currentTab = index;
         },
@@ -151,13 +151,45 @@ export default {
         },
 
         // 确认选择日期时触发
-        handleDate(value){
-            this.form.departDate = moment(value).format('YYYY-MM-DD');
+        handleDate(value) {
+            this.form.departDate = moment(value).format("YYYY-MM-DD");
         },
 
         // 提交表单时触发
         handleSubmit() {
-            console.log(this.form);
+            // 自定义验证，减少对组件的依赖
+            const rules = {
+                // message是错误的信息， value是对应表单中的值
+                departCity: {
+                    message: "请输入出发城市",
+                    value: this.form.departCity
+                },
+                destCity: {
+                    message: "请输入到达城市",
+                    value: this.form.destCity
+                },
+                departDate: {
+                    message: "请输入出发时间",
+                    value: this.form.departDate
+                }
+            };
+
+            let valid = true;
+            // 循环rules对象，判断对象属性的value是否为空，是就打印message错误信息
+            Object.keys(rules).forEach(v => {
+                // 只要一次验证不通过，后面就不再执行
+                if (!valid) return;
+                const { message, value } = rules[v];
+                if (!value) {
+                    this.$message.error(message);
+                    // 验证不通过
+                    valid = false;
+                }
+            });
+
+            if (!valid) return;
+            // 将参数拼接到路径
+            this.$router.push({ path: "/air/flights", query: this.form });
         },
 
         // 输入城市搜索框失去焦点触发，默认选中城市列表中第一个
