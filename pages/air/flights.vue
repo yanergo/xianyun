@@ -11,7 +11,7 @@
 
                 <!-- 航班信息 -->
                 <FlightsItem
-                    v-for="(item, index) in flightData.flights"
+                    v-for="(item, index) in dataList"
                     :key="index"
                     :item="item"
                 />
@@ -49,14 +49,23 @@ export default {
         return {
             // 请求机票列表返回的总数据，包含了flights,info, options,total
             flightData: {},
-            pageIndex:1,
-            pageSize:5,
-
+            pageIndex: 1,
+            pageSize: 5,
+            dataList: []
         };
     },
-    methods:{
-        handleSizeChange(){},
-        handleCurrentChange(){}
+    methods: {
+        handleSizeChange(val) {
+            this.pageSize = val;
+            this.dataList = this.flightData.flights.slice(0, this.pageSize);
+        },
+        handleCurrentChange(val) {
+            this.pageIndex = val;
+            this.dataList = this.flightData.flights.slice(
+                (this.pageIndex - 1) * this.pageSize,
+                this.pageIndex * this.pageSize
+            );
+        }
     },
     mounted() {
         this.$axios({
@@ -66,6 +75,7 @@ export default {
             console.log(res);
             const data = res.data;
             this.flightData = data;
+            this.dataList = this.flightData.flights.slice(0, this.pageSize);
         });
     }
 };
