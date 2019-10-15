@@ -15,6 +15,18 @@
                     :key="index"
                     :item="item"
                 />
+
+                <!-- 分页组件 -->
+                <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="pageIndex"
+                    :page-sizes="[3, 5, 8, 10]"
+                    :page-size="pageSize"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="flightData.total"
+                >
+                </el-pagination>
             </div>
 
             <!-- 侧边栏 -->
@@ -36,8 +48,15 @@ export default {
     data() {
         return {
             // 请求机票列表返回的总数据，包含了flights,info, options,total
-            flightData: {}
+            flightData: {},
+            pageIndex:1,
+            pageSize:5,
+
         };
+    },
+    methods:{
+        handleSizeChange(){},
+        handleCurrentChange(){}
     },
     mounted() {
         this.$axios({
