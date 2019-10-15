@@ -25,8 +25,17 @@
                     :page-size="pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="flightData.total"
+                    v-if="flightData.flights.length"
                 >
                 </el-pagination>
+
+                <!-- 没有数据时显示的数据 -->
+                <div
+                    v-if="flightData.flights.length === 0 && !loading"
+                    style="padding: 50px; text-align:center"
+                >
+                    该航班暂无数据
+                </div>
             </div>
 
             <!-- 侧边栏 -->
@@ -48,23 +57,30 @@ export default {
     data() {
         return {
             // 请求机票列表返回的总数据，包含了flights,info, options,total
-            flightData: {},
+            flightData: {
+                flights: []
+            },
             pageIndex: 1,
             pageSize: 5,
-            dataList: []
+            loading: true
         };
+    },
+    computed: {
+        dataList() {
+            const arr = this.flightData.flights.slice(
+                (this.pageIndex - 1) * this.pageSize,
+                this.pageIndex * this.pageSize
+            );
+
+            return arr;
+        }
     },
     methods: {
         handleSizeChange(val) {
             this.pageSize = val;
-            this.dataList = this.flightData.flights.slice(0, this.pageSize);
         },
         handleCurrentChange(val) {
             this.pageIndex = val;
-            this.dataList = this.flightData.flights.slice(
-                (this.pageIndex - 1) * this.pageSize,
-                this.pageIndex * this.pageSize
-            );
         }
     },
     mounted() {
@@ -75,7 +91,7 @@ export default {
             console.log(res);
             const data = res.data;
             this.flightData = data;
-            this.dataList = this.flightData.flights.slice(0, this.pageSize);
+            this.loading = false;
         });
     }
 };
