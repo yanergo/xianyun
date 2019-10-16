@@ -4,7 +4,10 @@
             <!-- 顶部过滤列表 -->
             <div class="flights-content">
                 <!-- 过滤条件 -->
-                <FlightsFilters :flightData="flightData" />
+                <FlightsFilters
+                    :flightData="cacheFlightsData"
+                    @setDataList="setDataList"
+                />
 
                 <!-- 航班头部布局 -->
                 <FlightsListHead />
@@ -61,12 +64,18 @@ export default {
             // 请求机票列表返回的总数据，包含了flights,info, options,total
             flightData: {
                 flights: [],
-                info:{},
-                options:{}
+                info: {},
+                options: {}
             },
             pageIndex: 1,
             pageSize: 5,
-            loading: true
+            loading: true,
+            cacheFlightsData: {
+                // 缓存一份数据，只会修改一次
+                flights: [],
+                info: {},
+                options: {}
+            }
         };
     },
     computed: {
@@ -85,6 +94,9 @@ export default {
         },
         handleCurrentChange(val) {
             this.pageIndex = val;
+        },
+        setDataList(arr) {
+            this.flightData.flights = arr;
         }
     },
     mounted() {
@@ -96,6 +108,9 @@ export default {
             const data = res.data;
             this.flightData = data;
             this.loading = false;
+            // 缓存一份新的列表数据数据，这个列表不会被修改
+            // 而flightsData会被修改
+            this.cacheFlightsData = {...data};
         });
     }
 };

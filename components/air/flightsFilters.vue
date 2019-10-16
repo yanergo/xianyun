@@ -7,7 +7,9 @@
             align="middle"
         >
             <el-col :span="8">
-                单程： 广州 - 上海 / 2019-06-17
+                单程： {{ flightData.info.departCity }} -
+                {{ flightData.info.destCity }} /
+                {{ flightData.info.departDate }}
             </el-col>
             <el-col :span="4">
                 <el-select
@@ -73,8 +75,12 @@
                     @change="handleAirSize"
                 >
                     <el-option
-                    v-for="(item,index) in sizeOptions" :key="index"
-                     :label="item.name" :value="item.size"> </el-option>
+                        v-for="(item, index) in sizeOptions"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.size"
+                    >
+                    </el-option>
                 </el-select>
             </el-col>
         </el-row>
@@ -109,10 +115,10 @@ export default {
             flightTimes: "", // 出发时间
             company: "", // 航空公司
             airSize: "", // 机型大小
-            sizeOptions:[
-                {name:'大',size:'L'},
-                {name:'中',size:'M'},
-                {name:'小',size:'S'}
+            sizeOptions: [
+                { name: "大", size: "L" },
+                { name: "中", size: "M" },
+                { name: "小", size: "S" }
             ]
         };
     },
@@ -124,7 +130,12 @@ export default {
         handleFlightTimes(value) {},
 
         // 选择航空公司时候触发
-        handleCompany(value) {},
+        handleCompany(value) {
+            var arr = this.flightData.flights.filter(v => {
+                return v.airline_name === value;
+            });
+            this.$emit("setDataList", arr);
+        },
 
         // 选择机型时候触发
         handleAirSize(value) {},
