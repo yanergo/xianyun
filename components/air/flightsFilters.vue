@@ -42,11 +42,7 @@
                                 item.from < 10 ? '0' + item.from : item.from
                             }:00 - ${item.to < 10 ? '0' + item.to : item.to}:00`
                         "
-                        :value="
-                            `${
-                                item.from < 10 ? '0' + item.from : item.from
-                            }:00 - ${item.to < 10 ? '0' + item.to : item.to}:00`
-                        "
+                        :value="`${item.from}, ${item.to}`"
                     >
                     </el-option>
                 </el-select>
@@ -125,14 +121,23 @@ export default {
     methods: {
         // 选择机场时触发
         handleAirport(value) {
-            var arr = this.flightData.flights.filter(v=>{
+            var arr = this.flightData.flights.filter(v => {
                 return v.org_airport_name === value;
             });
-            this.$emit('setDataList',arr);
+            this.$emit("setDataList", arr);
         },
 
         // 选择出发时间时候触发
         handleFlightTimes(value) {
+            // 按照前面给value绑定的数据，将字符串分隔成两个数组元素
+            var time = value.split(",");
+            var arr = this.flightData.flights.filter(v => {
+                // 比较航班出发时间是否在选中的时间范围内
+                var temp = + v.dep_time.split(':')[0];
+                return temp >= +time[0] && temp < time[1]
+            });
+            // 修改列表数据
+            this.$emit('setDataList',arr)
         },
 
         // 选择航空公司时候触发
@@ -144,10 +149,21 @@ export default {
         },
 
         // 选择机型时候触发
-        handleAirSize(value) {},
+        handleAirSize(value) {
+            var arr = this.flightData.flights.filter(v=>{
+                return v.plane_size === value;
+            });
+            this.$emit('setDataList',arr);
+        },
 
         // 撤销条件时候触发
-        handleFiltersCancel() {}
+        handleFiltersCancel() {
+            this.airport='';
+            this.flightTimes='';
+            this.company='';
+            this.airSize='';
+            this.$emit('setDataList',this.flightData.flights);
+        }
     },
     mounted() {}
 };
