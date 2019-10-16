@@ -124,10 +124,16 @@ export default {
     },
     methods: {
         // 选择机场时触发
-        handleAirport(value) {},
+        handleAirport(value) {
+            var arr = this.flightData.flights.filter(v=>{
+                return v.org_airport_name === value;
+            });
+            this.$emit('setDataList',arr);
+        },
 
         // 选择出发时间时候触发
-        handleFlightTimes(value) {},
+        handleFlightTimes(value) {
+        },
 
         // 选择航空公司时候触发
         handleCompany(value) {

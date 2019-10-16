@@ -27,7 +27,7 @@
                     :page-sizes="[3, 5, 8, 10]"
                     :page-size="pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
-                    :total="flightData.total"
+                    :total="total"
                     v-if="flightData.flights.length"
                 >
                 </el-pagination>
@@ -70,6 +70,7 @@ export default {
             pageIndex: 1,
             pageSize: 5,
             loading: true,
+            total: 0,
             cacheFlightsData: {
                 // 缓存一份数据，只会修改一次
                 flights: [],
@@ -91,12 +92,16 @@ export default {
     methods: {
         handleSizeChange(val) {
             this.pageSize = val;
+            this.pageIndex = 1;
         },
         handleCurrentChange(val) {
             this.pageIndex = val;
         },
         setDataList(arr) {
             this.flightData.flights = arr;
+
+            this.total = arr.length;
+            this.pageIndex = 1;
         }
     },
     mounted() {
@@ -108,9 +113,10 @@ export default {
             const data = res.data;
             this.flightData = data;
             this.loading = false;
+            this.total = this.flightData.total;
             // 缓存一份新的列表数据数据，这个列表不会被修改
             // 而flightsData会被修改
-            this.cacheFlightsData = {...data};
+            this.cacheFlightsData = { ...data };
         });
     }
 };
