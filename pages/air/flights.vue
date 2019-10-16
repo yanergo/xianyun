@@ -44,6 +44,7 @@
             <!-- 侧边栏 -->
             <div class="aside">
                 <!-- 侧边栏组件 -->
+                <FlightsAside />
             </div>
         </el-row>
     </section>
@@ -53,11 +54,13 @@
 import FlightsListHead from "@/components/air/flightsListHead";
 import FlightsItem from "@/components/air/flightsItem";
 import FlightsFilters from "@/components/air/flightsFilters";
+import FlightsAside from "@/components/air/flightsAside";
 export default {
     components: {
         FlightsListHead,
         FlightsItem,
-        FlightsFilters
+        FlightsFilters,
+        FlightsAside
     },
     data() {
         return {
@@ -89,7 +92,29 @@ export default {
             return arr;
         }
     },
+    watch: {
+        // 监听路由
+        $route() {
+            // 请求机票列表数据
+            this.getList();
+        }
+    },
     methods: {
+        getList() {
+            this.$axios({
+                url: "/airs",
+                params: this.$route.query
+            }).then(res => {
+                console.log(res);
+                const data = res.data;
+                this.flightData = data;
+                this.loading = false;
+                this.total = this.flightData.total;
+                // 缓存一份新的列表数据数据，这个列表不会被修改
+                // 而flightsData会被修改
+                this.cacheFlightsData = { ...data };
+            });
+        },
         handleSizeChange(val) {
             this.pageSize = val;
             this.pageIndex = 1;
@@ -105,19 +130,7 @@ export default {
         }
     },
     mounted() {
-        this.$axios({
-            url: "/airs",
-            params: this.$route.query
-        }).then(res => {
-            console.log(res);
-            const data = res.data;
-            this.flightData = data;
-            this.loading = false;
-            this.total = this.flightData.total;
-            // 缓存一份新的列表数据数据，这个列表不会被修改
-            // 而flightsData会被修改
-            this.cacheFlightsData = { ...data };
-        });
+        this.getList();
     }
 };
 </script>

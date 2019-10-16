@@ -190,6 +190,7 @@ export default {
             if (!valid) return;
             // 将参数拼接到路径
             this.$router.push({ path: "/air/flights", query: this.form });
+            this.$store.commit('air/setHistory',this.form);
         },
 
         // 输入城市搜索框失去焦点触发，默认选中城市列表中第一个
