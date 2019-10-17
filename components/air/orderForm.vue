@@ -58,10 +58,17 @@
         <div class="air-column">
             <h2>保险</h2>
             <div>
-                <div class="insurance-item">
+                <div
+                    class="insurance-item"
+                    v-for="(item, index) in detail.insurances"
+                    :key="index"
+                >
                     <el-checkbox
-                        label="航空意外险：￥30/份×1  最高赔付260万"
+                        :label="
+                            `${item.type}：￥${item.price}/份×1  最高赔付${item.compensation}`
+                        "
                         border
+                        @change="handleChange(item.id)"
                     >
                     </el-checkbox>
                 </div>
@@ -102,18 +109,20 @@
 export default {
     data() {
         return {
+            detail: {},
             users: [
                 {
                     username: "",
                     id: ""
                 }
-            ]
+            ],
+            insurances: []
         };
     },
     methods: {
         // 删除乘机人
         handleDeleteUser(index) {
-            this.users.splice(index,1);
+            this.users.splice(index, 1);
         },
         // 添加乘机人
         handleAddUsers() {
@@ -125,19 +134,31 @@ export default {
                 }
             ];
         },
+        handleChange(id) {
+            const index = this.insurances.indexOf(id);
+            if (index > -1) {
+                // 已经存在
+                this.insurances.splice(index,1);
+            }else{
+                // 没有存在
+                this.insurances.push(id);
+            }
+            console.log(this.insurances);
+        },
         handleSendCaptcha() {},
         handleSubmit() {}
     },
-    mounted(){
-        const {id,seat_xid} = this.$route.query
+    mounted() {
+        const { id, seat_xid } = this.$route.query;
         this.$axios({
-            url:'/airs/'+id,
-            params:{
+            url: "/airs/" + id,
+            params: {
                 seat_xid
             }
-        }).then(res=>{
+        }).then(res => {
             console.log(res);
-        })
+            this.detail = res.data;
+        });
     }
 };
 </script>
