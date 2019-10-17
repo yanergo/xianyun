@@ -121,9 +121,9 @@ export default {
             ],
             // 保险id的集合
             insurances: [],
-            contactName: "",// 联系人
-            contactPhone: "",// 联系电话
-            captcha:"",// 验证码
+            contactName: "", // 联系人
+            contactPhone: "", // 联系电话
+            captcha: "", // 验证码
             invoice: false // 发票，写死
         };
     },
@@ -153,18 +153,25 @@ export default {
             }
             console.log(this.insurances);
         },
-        handleSendCaptcha() {},
+        async handleSendCaptcha() {
+            if (!this.contactPhone) {
+                this.$message.error("手机号码不能为空");
+                return;
+            }
+            const res = await this.$store.dispatch("user/sendCaptcha", this.contactPhone);
+            this.$message.success(`验证码是：${res.data.code}`);
+        },
         handleSubmit() {
             const data = {
                 users: this.users,
                 insurances: this.insurances,
-                contactName:this.contactName,
-                contactPhone:this.contactPhone,
-                invoice:this.invoice,
-                seat_xid:this.$route.query.seat_xid,
-                air:this.$route.query.id
+                contactName: this.contactName,
+                contactPhone: this.contactPhone,
+                invoice: this.invoice,
+                seat_xid: this.$route.query.seat_xid,
+                air: this.$route.query.id
             };
-            console.log(data,this.captcha);
+            console.log(data, this.captcha);
             
         }
     },
