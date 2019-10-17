@@ -61,7 +61,7 @@ export default {
                     const res = await this.$store.dispatch('user/login',this.form);
                     if(res.status === 200){
                         this.$message.success('登陆成功');
-                        this.$router.push('/');
+                        this.$router.back('/');
                     }
 
                 }

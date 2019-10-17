@@ -1,7 +1,7 @@
 import { Message } from 'element-ui';
 
-export default function ({ $axios, redirect }) {
-    $axios.onError(err => {
+export default (context)=>{
+    context.$axios.onError(err => {
         const { statusCode, message } = err.response.data;
 
         // 还未使用
@@ -12,6 +12,11 @@ export default function ({ $axios, redirect }) {
 
         if (statusCode === 400) {
             Message.error(message);
+        }
+
+        if(statusCode === 403){
+            // 路由重定向的方法
+            context.redirect("/user/login");
         }
     })
 }
