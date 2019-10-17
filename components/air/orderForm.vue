@@ -80,11 +80,14 @@
             <div class="contact">
                 <el-form label-width="60px">
                     <el-form-item label="姓名">
-                        <el-input></el-input>
+                        <el-input v-model="contactName"></el-input>
                     </el-form-item>
 
                     <el-form-item label="手机">
-                        <el-input placeholder="请输入内容">
+                        <el-input
+                            placeholder="请输入内容"
+                            v-model="contactPhone"
+                        >
                             <template slot="append">
                                 <el-button @click="handleSendCaptcha"
                                     >发送验证码</el-button
@@ -94,7 +97,7 @@
                     </el-form-item>
 
                     <el-form-item label="验证码">
-                        <el-input></el-input>
+                        <el-input v-model="captcha"></el-input>
                     </el-form-item>
                 </el-form>
                 <el-button type="warning" class="submit" @click="handleSubmit()"
@@ -116,7 +119,12 @@ export default {
                     id: ""
                 }
             ],
-            insurances: []
+            // 保险id的集合
+            insurances: [],
+            contactName: "",// 联系人
+            contactPhone: "",// 联系电话
+            captcha:"",// 验证码
+            invoice: false // 发票，写死
         };
     },
     methods: {
@@ -138,18 +146,31 @@ export default {
             const index = this.insurances.indexOf(id);
             if (index > -1) {
                 // 已经存在
-                this.insurances.splice(index,1);
-            }else{
+                this.insurances.splice(index, 1);
+            } else {
                 // 没有存在
                 this.insurances.push(id);
             }
             console.log(this.insurances);
         },
         handleSendCaptcha() {},
-        handleSubmit() {}
+        handleSubmit() {
+            const data = {
+                users: this.users,
+                insurances: this.insurances,
+                contactName:this.contactName,
+                contactPhone:this.contactPhone,
+                invoice:this.invoice,
+                seat_xid:this.$route.query.seat_xid,
+                air:this.$route.query.id
+            };
+            console.log(data,this.captcha);
+            
+        }
     },
     mounted() {
         const { id, seat_xid } = this.$route.query;
+        // 获取机票详情
         this.$axios({
             url: "/airs/" + id,
             params: {
