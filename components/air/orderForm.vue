@@ -168,6 +168,7 @@ export default {
                 contactName: this.contactName,
                 contactPhone: this.contactPhone,
                 invoice: this.invoice,
+                captcha:this.captcha,
                 seat_xid: this.$route.query.seat_xid,
                 air: this.$route.query.id
             };
@@ -176,7 +177,11 @@ export default {
             this.$axios({
                 url:'/airorders',
                 method:'POST',
-                data
+                data,
+                headers:{
+                    // jwt标准的token
+                    Authorization:`Bearer ${this.$store.state.user.userInfo.token}`
+                }
             }).then(res=>{
                 console.log(res);
             })
