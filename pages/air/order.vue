@@ -3,19 +3,34 @@
         <el-row type="flex" justify="space-between">
             <!-- 订单表单 -->
 
-            <OrderForm />
+            <OrderForm @getDetail="getDetail" />
 
             <!-- 侧边栏 -->
-            <div class="aside"></div>
+            <OrderAside :data="detail"/>
         </el-row>
     </div>
 </template>
 
 <script>
 import OrderForm from "@/components/air/orderForm";
+import OrderAside from "@/components/air/orderAside";
 export default {
+    data(){
+        return {
+            detail:{
+                //默认值
+                seat_infos:{}
+            }
+        };
+    },
     components: {
-        OrderForm
+        OrderForm,
+        OrderAside
+    },
+    methods:{
+        getDetail(detail){
+            this.detail = detail;
+        }
     }
 };
 </script>

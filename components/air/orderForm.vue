@@ -1,7 +1,7 @@
 <template>
     <div class="main">
         <div class="air-column">
-            <h2>剩机人</h2>
+            <h2>乘机人</h2>
             <el-form class="member-info">
                 <div
                     class="member-info-item"
@@ -198,6 +198,8 @@ export default {
         }).then(res => {
             console.log(res);
             this.detail = res.data;
+
+            this.$emit('getDetail',this.detail);
         });
     }
 };

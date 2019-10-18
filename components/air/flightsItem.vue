@@ -60,7 +60,11 @@
                             ￥{{ seat.org_settle_price }}
                         </el-col>
                         <el-col :span="3" class="choose-button">
-                            <nuxt-link :to="`/air/order?id=${item.id}&seat_xid=${seat.seat_xid}`">
+                            <nuxt-link
+                                :to="
+                                    `/air/order?id=${item.id}&seat_xid=${seat.seat_xid}`
+                                "
+                            >
                                 <el-button type="warning" size="mini">
                                     选定
                                 </el-button>
@@ -75,6 +79,7 @@
 </template>
 
 <script>
+import { computeTime } from "@/utils/utils";
 export default {
     //props可以使用数组也可以使用对象
     props: {
@@ -93,29 +98,7 @@ export default {
     },
     computed: {
         rankTime() {
-            const depTime = this.item.dep_time.split(":");
-            const arrTime = this.item.arr_time.split(":");
-
-            // 到达时间为第二天
-            if (arrTime[0] < depTime[0]) {
-                arrTime[0] += 24;
-            }
-
-            // 出发分钟时间
-            const start = depTime[0] * 60 + depTime[1] * 1;
-
-            // 到达分钟时间
-            const end = arrTime[0] * 60 + arrTime[1] * 1;
-
-            // 相隔分钟时间
-            const dis = end - start;
-
-            // 换算成小时和分钟
-            const hour = Math.floor(dis / 60);
-
-            const min = dis % 60;
-
-            return `${hour}小时${min}分钟`;
+            return computeTime(this.item.arr_time, this.item.dep_time);
         }
     }
 };
