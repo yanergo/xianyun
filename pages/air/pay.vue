@@ -81,6 +81,10 @@ export default {
                 
             }, 3000);
         }, 10);
+    },
+    // 组件销毁时使用，一般用于清除定时器
+    destroyed(){
+        clearInterval(this.timer);
     }
 };
 </script>
