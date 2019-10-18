@@ -103,6 +103,8 @@
                 <el-button type="warning" class="submit" @click="handleSubmit()"
                     >提交订单</el-button
                 >
+                <!-- 调用总价格，让computed会执行 -->
+                <span v-show="false">{{allPrice}}</span>
             </div>
         </div>
     </div>
@@ -153,7 +155,6 @@ export default {
                 // 没有存在
                 this.insurances.push(id);
             }
-            console.log(this.insurances);
         },
         async handleSendCaptcha() {
             if (!this.contactPhone) {
@@ -174,7 +175,6 @@ export default {
                 seat_xid: this.$route.query.seat_xid,
                 air: this.$route.query.id
             };
-            console.log(data, this.captcha);
             // 提交订单接口
             this.$axios({
                 url:'/airorders',
@@ -185,7 +185,14 @@ export default {
                     Authorization:`Bearer ${this.$store.state.user.userInfo.token}`
                 }
             }).then(res=>{
-                console.log(res);
+                const {data,message} = res.data;
+                this.$message.success(message);
+                this.$router.push({
+                    path:'/air/pay',
+                    query:{
+                        id:data.id
+                    }
+                })
             })
         }
     },
