@@ -36,28 +36,50 @@
 export default {
     data() {
         return {
-            order: {}
+            order: {},
+            timer:null
         };
     },
     mounted() {
         const { id } = this.$route.query;
         // 等待本地插件吧本地存储的值赋给store之后再请求执行，才可以拿到token
-        setTimeout(() => {
+        setTimeout(async () => {
             // 请求订单详情
-            this.$axios({
+            const res = await this.$axios({
                 url: "/airorders/" + id,
                 headers: {
                     Authorization: `Bearer ${this.$store.state.user.userInfo.token}`
                 }
-            }).then(res => {
-                console.log(res);
-                this.order = res.data;
-                var qrcode = new QRCode(document.getElementById("qrcode"), {
-                    text: this.order.payInfo.code_url,
-                    width: 200,
-                    height: 200
-                });
             });
+            this.order = res.data;
+            var qrcode = new QRCode(document.getElementById("qrcode"), {
+                text: this.order.payInfo.code_url,
+                width: 200,
+                height: 200
+            });
+            // 查询付款状态
+            this.timer = setInterval(async () => {
+                const res = await this.$axios({
+                    url:'/airorders/checkpay',
+                    method:'POST',
+                    headers:{
+                        Authorization: `Bearer ${this.$store.state.user.userInfo.token}`
+                    },
+                    data:{
+                        id:this.$route.query.id,
+                        nonce_str:this.order.price,
+                        out_trade_no:this.order.orderNo
+                    }
+                });
+                // 获取支付状态
+                const {statusTxt} = res.data;
+                // 支付完成后的判断
+                if(statusTxt==='支付完成'){
+                    this.$message.success(statusTxt);
+                    clearInterval(this.timer);
+                }
+                
+            }, 3000);
         }, 10);
     }
 };
