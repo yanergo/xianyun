@@ -2,7 +2,7 @@
     <div class="container">
         <div class="main">
             <div class="pay-title">
-                支付总金额 <span class="pay-price">￥ {{order.price}}</span>
+                支付总金额 <span class="pay-price">￥ {{ order.price }}</span>
             </div>
             <div class="pay-main">
                 <h4>微信支付</h4>
@@ -14,7 +14,9 @@
                 >
                     <div class="qrcode">
                         <!-- 二维码 -->
-                        <canvas id="qrcode-stage"></canvas>
+                        <div id="qrcode"></div>
+                        <script src="/qrcode.js"></script>
+                        <!-- <canvas id="qrcode-stage"></canvas> -->
                         <p>请使用微信扫一扫</p>
                         <p>扫描二维码支付</p>
                     </div>
@@ -41,6 +43,7 @@ export default {
         const { id } = this.$route.query;
         // 等待本地插件吧本地存储的值赋给store之后再请求执行，才可以拿到token
         setTimeout(() => {
+            // 请求订单详情
             this.$axios({
                 url: "/airorders/" + id,
                 headers: {
@@ -49,8 +52,13 @@ export default {
             }).then(res => {
                 console.log(res);
                 this.order = res.data;
+                var qrcode = new QRCode(document.getElementById("qrcode"), {
+                    text: this.order.payInfo.code_url,
+                    width: 200,
+                    height: 200
+                });
             });
-        },10);
+        }, 10);
     }
 };
 </script>
@@ -93,7 +101,7 @@ export default {
                 padding: 15px;
                 height: fit-content;
 
-                #qrcode-stage {
+                #qrcode {
                     width: 200px;
                     height: 200px;
                     margin-bottom: 10px;
