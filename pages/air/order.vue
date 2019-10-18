@@ -3,10 +3,10 @@
         <el-row type="flex" justify="space-between">
             <!-- 订单表单 -->
 
-            <OrderForm @getDetail="getDetail" />
+            <OrderForm @getDetail="getDetail" @getAllPrice="getAllPrice" />
 
             <!-- 侧边栏 -->
-            <OrderAside :data="detail"/>
+            <OrderAside :data="detail" :allPrice="allPrice"/>
         </el-row>
     </div>
 </template>
@@ -20,7 +20,8 @@ export default {
             detail:{
                 //默认值
                 seat_infos:{}
-            }
+            },
+            allPrice:0
         };
     },
     components: {
@@ -30,6 +31,9 @@ export default {
     methods:{
         getDetail(detail){
             this.detail = detail;
+        },
+        getAllPrice(value){
+            this.allPrice = value;
         }
     }
 };

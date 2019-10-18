@@ -112,7 +112,9 @@
 export default {
     data() {
         return {
-            detail: {},
+            detail: {
+                seat_infos:{}
+            },
             users: [
                 {
                     username: "",
@@ -185,6 +187,22 @@ export default {
             }).then(res=>{
                 console.log(res);
             })
+        }
+    },
+    computed:{
+        allPrice(){
+            if(this.detail==={}) return ;
+            let price = 0;
+            let len = this.users.length;
+            let ins_price = 0;
+            this.insurances.forEach(v => {
+                ins_price += this.detail.insurances[v-1].price;
+            });
+            
+            price = this.detail.seat_infos.org_settle_price + this.detail.airport_tax_audlet + ins_price;
+            price = price * len;
+            this.$emit('getAllPrice',price)
+            return price;
         }
     },
     mounted() {
