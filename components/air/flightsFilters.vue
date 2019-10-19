@@ -14,9 +14,8 @@
             <el-col :span="4">
                 <el-select
                     size="mini"
-                    v-model="airport"
+                    v-model="filters.airport"
                     placeholder="起飞机场"
-                    @change="handleAirport"
                 >
                     <el-option
                         v-for="(item, index) in flightData.options.airport"
@@ -30,9 +29,8 @@
             <el-col :span="4">
                 <el-select
                     size="mini"
-                    v-model="flightTimes"
+                    v-model="filters.flightTimes"
                     placeholder="起飞时间"
-                    @change="handleFlightTimes"
                 >
                     <el-option
                         v-for="(item, index) in flightData.options.flightTimes"
@@ -50,9 +48,8 @@
             <el-col :span="4">
                 <el-select
                     size="mini"
-                    v-model="company"
+                    v-model="filters.company"
                     placeholder="航空公司"
-                    @change="handleCompany"
                 >
                     <el-option
                         v-for="(item, index) in flightData.options.company"
@@ -66,9 +63,8 @@
             <el-col :span="4">
                 <el-select
                     size="mini"
-                    v-model="airSize"
+                    v-model="filters.airSize"
                     placeholder="机型"
-                    @change="handleAirSize"
                 >
                     <el-option
                         v-for="(item, index) in sizeOptions"
@@ -107,10 +103,12 @@ export default {
     },
     data() {
         return {
-            airport: "", // 机场
-            flightTimes: "", // 出发时间
-            company: "", // 航空公司
-            airSize: "", // 机型大小
+            filters:{
+                airport: "", // 机场
+                flightTimes: "", // 出发时间
+                company: "", // 航空公司
+                airSize: "", // 机型大小
+            },
             sizeOptions: [
                 { name: "大", size: "L" },
                 { name: "中", size: "M" },
@@ -118,50 +116,49 @@ export default {
             ]
         };
     },
+    watch:{
+        filters:{
+            deep:true,
+            handler(){
+                var arr = this.flightData.flights.filter(v=>{
+                    // 先假设所有航班数据都符合筛选条件，再根据条件排除不符合条件的数据，将vaild改为false
+                    let vaild = true;
+
+                    if(this.filters.company && this.filters.company !== v.airline_name){
+                        vaild = false;
+                    }
+
+                    if(this.filters.flightTimes){
+                        let time = this.filters.flightTimes.split(',');
+                        let start = v.dep_time.split(':')[0];
+                        if(start < +time[0] || start >= +time[1]){
+                            vaild = false;
+                        }
+                    }
+                    
+                    if(this.filters.airport && this.filters.airport !== v.org_airport_name){
+                        vaild = false;
+                    }
+
+                    if(this.filters.airSize && this.filters.airSize !== v.plane_size){
+                        vaild = false;
+                    }
+
+                    return vaild;
+                });
+
+                this.$emit('setDataList',arr);
+            }
+        }
+    },
     methods: {
-        // 选择机场时触发
-        handleAirport(value) {
-            var arr = this.flightData.flights.filter(v => {
-                return v.org_airport_name === value;
-            });
-            this.$emit("setDataList", arr);
-        },
-
-        // 选择出发时间时候触发
-        handleFlightTimes(value) {
-            // 按照前面给value绑定的数据，将字符串分隔成两个数组元素
-            var time = value.split(",");
-            var arr = this.flightData.flights.filter(v => {
-                // 比较航班出发时间是否在选中的时间范围内
-                var temp = + v.dep_time.split(':')[0];
-                return temp >= +time[0] && temp < time[1]
-            });
-            // 修改列表数据
-            this.$emit('setDataList',arr)
-        },
-
-        // 选择航空公司时候触发
-        handleCompany(value) {
-            var arr = this.flightData.flights.filter(v => {
-                return v.airline_name === value;
-            });
-            this.$emit("setDataList", arr);
-        },
-
-        // 选择机型时候触发
-        handleAirSize(value) {
-            var arr = this.flightData.flights.filter(v=>{
-                return v.plane_size === value;
-            });
-            this.$emit('setDataList',arr);
-        },
-
+       
         // 撤销条件时候触发
         handleFiltersCancel() {
-            this.airport='';
-            this.flightTimes='';
-            this.company='';
-            this.airSize='';
+            this.filters.airport='';
+            this.filters.flightTimes='';
+            this.filters.company='';
+            this.filters.airSize='';
             this.$emit('setDataList',this.flightData.flights);
         }
     },
